@@ -67,8 +67,9 @@ Content the tools read lives in [`content/`](content/). Source URLs are in each 
 ## TODOs
 
 - Support email ([SUPPORT.md](SUPPORT.md), [PRIVACY.md](PRIVACY.md))
-- Logo (plugin manifests)
 - Domain attach for `mcp.suhitanantula.com` (out of scope for this PR)
+
+Logo: [`assets/logo.png`](assets/logo.png) (plugin manifests).
 
 ## Licence
 
