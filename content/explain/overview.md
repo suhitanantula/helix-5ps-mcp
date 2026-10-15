@@ -20,7 +20,7 @@ AI is not a phase in the 5Ps. It is the connective tissue. At Perceive it finds 
 
 They aren't just steps. They're zones of collaboration where the strategy and design strands of the Helix touch. They are also zones of collaboration of human and machine intelligence.
 
-Use these five capacities as a loop, not a rigid sequence. Normally start with Perceive and Portfolio: understand the situation and open up possibilities before settling on a plan. If you already have evidence and options, start where they lead. Return to an earlier question whenever new evidence warrants it.
+Use these five capacities as a loop, not a rigid sequence. Normally start with Perceive and Portfolio: understand the situation and open up possibilities before settling on a plan. If I already have evidence and options, start where they lead. Return to an earlier question whenever new evidence warrants it.
 
 ## The five questions
 

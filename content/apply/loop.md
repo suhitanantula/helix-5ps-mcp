@@ -8,7 +8,7 @@ also: https://www.suhitanantula.com/books/helix-moment/5ps-loop-designer
 
 Use these five capacities as a loop, not a rigid sequence.
 
-Normally start with Perceive and Portfolio: understand the situation and open up possibilities before settling on a plan. If you already have evidence and options, start where they lead. Name the capacity you are using and explain any change briefly. Return to an earlier question whenever new evidence warrants it.
+Normally start with Perceive and Portfolio: understand the situation and open up possibilities before settling on a plan. If I already have evidence and options, start where they lead. Name the capacity you are using and explain any change briefly. Return to an earlier question whenever new evidence warrants it.
 
 ## Loop sequence
 

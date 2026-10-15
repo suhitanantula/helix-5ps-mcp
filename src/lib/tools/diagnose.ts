@@ -1,4 +1,5 @@
-import { readContent, type PKey } from "../content";
+import { P_KEYS, readContent, type PKey } from "../content";
+import { InvalidArgsError } from "../errors";
 import { PROBLEM_MAX_CHARS } from "../limits";
 
 const CUES: Record<PKey, RegExp[]> = {
@@ -19,10 +20,39 @@ const CUES: Record<PKey, RegExp[]> = {
     /\b(advance|hold|combine|stop|what matters)\b/i,
   ],
   progress: [
-    /\b(learn(ed|ing)?|changed|next|feedback|progress|record|reusable|memory|iterate|iteration|what comes next)\b/i,
+    /\b(learn(ed|ing)?|changed|next|feedback|progress|record|reusable|memory|iterate|iteration|what comes next|what did we learn)\b/i,
     /\b(expectations?|observations?|transfer)\b/i,
   ],
 };
+
+/** Strong phrase → P boosts (approved five-question wording). */
+const PHRASE_BOOSTS: Array<{ re: RegExp; p: PKey; weight: number }> = [
+  { re: /what did we learn/i, p: "progress", weight: 10 },
+  { re: /what changed/i, p: "progress", weight: 8 },
+  { re: /what comes next/i, p: "progress", weight: 8 },
+  {
+    re: /what is happening,? for whom,? and what are we missing/i,
+    p: "perceive",
+    weight: 10,
+  },
+  { re: /what are we missing/i, p: "perceive", weight: 8 },
+  { re: /what can we try or make to learn/i, p: "perform", weight: 10 },
+  {
+    re: /what different possibilities should we keep open/i,
+    p: "portfolio",
+    weight: 10,
+  },
+  {
+    re: /what deserves to move forward/i,
+    p: "pause_promote",
+    weight: 10,
+  },
+  {
+    re: /promote,\s*hold,\s*(combine\s*or\s*stop|or\s*kill)/i,
+    p: "pause_promote",
+    weight: 8,
+  },
+];
 
 function score(text: string, patterns: RegExp[]): number {
   let n = 0;
@@ -41,11 +71,16 @@ export type DiagnoseResult = {
 };
 
 export function diagnose5ps(problem: string): DiagnoseResult {
-  if (typeof problem !== "string" || !problem.trim()) {
-    throw new Error("problem is required");
+  if (typeof problem !== "string") {
+    throw new InvalidArgsError("problem must be a string");
+  }
+  if (!problem.trim()) {
+    throw new InvalidArgsError("problem is required");
   }
   if (problem.length > PROBLEM_MAX_CHARS) {
-    throw new Error(`problem exceeds ${PROBLEM_MAX_CHARS} characters`);
+    throw new InvalidArgsError(
+      `problem exceeds ${PROBLEM_MAX_CHARS} characters`,
+    );
   }
 
   const scores = {
@@ -56,9 +91,16 @@ export function diagnose5ps(problem: string): DiagnoseResult {
     progress: score(problem, CUES.progress),
   } as Record<PKey, number>;
 
+  for (const boost of PHRASE_BOOSTS) {
+    if (boost.re.test(problem)) {
+      scores[boost.p] += boost.weight;
+    }
+  }
+
   let recommended: PKey = "perceive";
   let best = -1;
-  for (const key of Object.keys(scores) as PKey[]) {
+  // Stable order; on ties keep the first max (boosts already applied).
+  for (const key of P_KEYS) {
     if (scores[key] > best) {
       best = scores[key];
       recommended = key;
@@ -94,7 +136,7 @@ export function diagnose5ps(problem: string): DiagnoseResult {
     scores,
     reasons,
     guidance:
-      "If you already have evidence and options, start where they lead. Return to an earlier question whenever new evidence warrants it.",
+      "If I already have evidence and options, start where they lead. Return to an earlier question whenever new evidence warrants it.",
     content,
   };
 }

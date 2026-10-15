@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "helix-5ps": {
-      "url": "https://mcp.suhitanantula.com/mcp",
-      "transport": "streamable-http"
-    }
-  }
-}

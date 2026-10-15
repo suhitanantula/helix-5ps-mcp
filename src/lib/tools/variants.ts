@@ -4,6 +4,7 @@ import {
   VARIANT_KEYS,
   type VariantKey,
 } from "../content";
+import { InvalidArgsError } from "../errors";
 import { SITUATION_MAX_CHARS } from "../limits";
 
 export function list5psVariants(): string {
@@ -11,9 +12,12 @@ export function list5psVariants(): string {
 }
 
 export function get5psVariant(variant: string): string {
+  if (typeof variant !== "string") {
+    throw new InvalidArgsError("variant must be a string");
+  }
   const key = normalizeVariant(variant);
   if (!key) {
-    throw new Error(
+    throw new InvalidArgsError(
       `variant must be one of: ${VARIANT_KEYS.join("|")}`,
     );
   }
@@ -27,32 +31,39 @@ export type CompareArgs = {
 
 export function compare5psVariants(args: CompareArgs): string {
   if (!Array.isArray(args.variants)) {
-    throw new Error("variants must be an array");
+    throw new InvalidArgsError("variants must be an array");
   }
   if (args.variants.length < 2 || args.variants.length > 4) {
-    throw new Error("variants must contain 2 to 4 items");
+    throw new InvalidArgsError("variants must contain 2 to 4 items");
   }
 
   const keys: VariantKey[] = [];
   for (const v of args.variants) {
+    if (typeof v !== "string") {
+      throw new InvalidArgsError("variants items must be strings");
+    }
     const key = normalizeVariant(v);
     if (!key) {
-      throw new Error(
+      throw new InvalidArgsError(
         `unknown variant "${v}"; expected ${VARIANT_KEYS.join("|")}`,
       );
     }
     if (!keys.includes(key)) keys.push(key);
   }
   if (keys.length < 2) {
-    throw new Error("variants must contain at least 2 distinct items");
+    throw new InvalidArgsError(
+      "variants must contain at least 2 distinct items",
+    );
   }
 
   if (args.situation !== undefined) {
     if (typeof args.situation !== "string") {
-      throw new Error("situation must be a string");
+      throw new InvalidArgsError("situation must be a string");
     }
     if (args.situation.length > SITUATION_MAX_CHARS) {
-      throw new Error(`situation exceeds ${SITUATION_MAX_CHARS} characters`);
+      throw new InvalidArgsError(
+        `situation exceeds ${SITUATION_MAX_CHARS} characters`,
+      );
     }
   }
 

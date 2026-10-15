@@ -1,3 +1,9 @@
+import {
+  InvalidArgsError,
+  assertOnlyKeys,
+  readOptionalString,
+  readRequiredString,
+} from "../errors";
 import { apply5ps } from "./apply";
 import { diagnose5ps } from "./diagnose";
 import { explain5ps } from "./explain";
@@ -32,10 +38,6 @@ function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {};
-}
-
-function asString(value: unknown): string | undefined {
-  return typeof value === "string" ? value : undefined;
 }
 
 export const TOOL_DEFS = [
@@ -200,66 +202,58 @@ export async function callTool(
   name: string,
   rawArgs: unknown,
 ): Promise<ToolResult> {
-  const args = asRecord(rawArgs);
+  if (rawArgs !== undefined && rawArgs !== null && typeof rawArgs !== "object") {
+    return textResult(
+      { error: "invalid_args", message: "arguments must be an object" },
+      true,
+    );
+  }
+  const args = asRecord(rawArgs ?? {});
   try {
     switch (name) {
-      case "explain_5ps":
+      case "explain_5ps": {
+        assertOnlyKeys(args, ["p", "depth"]);
         return textResult(
           explain5ps({
-            p: asString(args.p),
-            depth: asString(args.depth) as "short" | "full" | undefined,
+            p: readOptionalString(args, "p"),
+            depth: readOptionalString(args, "depth"),
           }),
         );
+      }
       case "diagnose_5ps": {
-        const problem = asString(args.problem);
-        if (!problem) {
-          return textResult(
-            { error: "invalid_args", message: "problem is required" },
-            true,
-          );
-        }
-        return textResult(diagnose5ps(problem));
+        assertOnlyKeys(args, ["problem"]);
+        return textResult(diagnose5ps(readRequiredString(args, "problem")));
       }
       case "apply_5ps": {
-        const problem = asString(args.problem);
-        if (!problem) {
-          return textResult(
-            { error: "invalid_args", message: "problem is required" },
-            true,
-          );
-        }
+        assertOnlyKeys(args, ["problem", "p", "context"]);
         return textResult(
           apply5ps({
-            problem,
-            p: asString(args.p),
-            context: asString(args.context),
+            problem: readRequiredString(args, "problem"),
+            p: readOptionalString(args, "p"),
+            context: readOptionalString(args, "context"),
           }),
         );
       }
-      case "list_5ps_variants":
+      case "list_5ps_variants": {
+        assertOnlyKeys(args, []);
         return textResult(list5psVariants());
+      }
       case "get_5ps_variant": {
-        const variant = asString(args.variant);
-        if (!variant) {
-          return textResult(
-            { error: "invalid_args", message: "variant is required" },
-            true,
-          );
-        }
-        return textResult(get5psVariant(variant));
+        assertOnlyKeys(args, ["variant"]);
+        return textResult(get5psVariant(readRequiredString(args, "variant")));
       }
       case "compare_5ps_variants": {
-        const variants = args.variants;
-        if (!Array.isArray(variants)) {
-          return textResult(
-            { error: "invalid_args", message: "variants must be an array" },
-            true,
-          );
+        assertOnlyKeys(args, ["variants", "situation"]);
+        if (!("variants" in args)) {
+          throw new InvalidArgsError("variants is required");
+        }
+        if (!Array.isArray(args.variants)) {
+          throw new InvalidArgsError("variants must be an array");
         }
         return textResult(
           compare5psVariants({
-            variants: variants.map(String),
-            situation: asString(args.situation),
+            variants: args.variants as string[],
+            situation: readOptionalString(args, "situation"),
           }),
         );
       }
@@ -270,6 +264,9 @@ export async function callTool(
         );
     }
   } catch (err) {
+    if (err instanceof InvalidArgsError) {
+      return textResult({ error: "invalid_args", message: err.message }, true);
+    }
     const message = err instanceof Error ? err.message : String(err);
     return textResult({ error: "tool_error", message }, true);
   }

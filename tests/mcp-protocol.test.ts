@@ -11,7 +11,7 @@ async function rpc(method: string, params?: unknown, id: number | string = 1) {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "x-forwarded-for": "203.0.113.10",
+        "x-vercel-forwarded-for": "203.0.113.10",
       },
       body: JSON.stringify({ jsonrpc: "2.0", id, method, params }),
     }),
@@ -96,7 +96,7 @@ describe("MCP protocol smoke", () => {
         method: "POST",
         headers: {
           "content-type": "application/json",
-          "x-forwarded-for": "198.51.100.7",
+          "x-vercel-forwarded-for": "198.51.100.7",
         },
         body: JSON.stringify({
           jsonrpc: "2.0",

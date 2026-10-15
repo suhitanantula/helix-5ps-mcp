@@ -6,7 +6,7 @@ also: https://www.suhitanantula.com/books/helix-moment/chapter-24-the-5ps-in-act
 
 # Which P do I need?
 
-Route a problem to a capacity using the five questions. Normally start with Perceive and Portfolio: understand the situation and open up possibilities before settling on a plan. If you already have evidence and options, start where they lead.
+Route a problem to a capacity using the five questions. Normally start with Perceive and Portfolio: understand the situation and open up possibilities before settling on a plan. If I already have evidence and options, start where they lead.
 
 ## Perceive
 

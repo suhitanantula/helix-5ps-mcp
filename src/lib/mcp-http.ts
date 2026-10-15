@@ -1,4 +1,8 @@
 import { BODY_MAX_BYTES } from "./limits";
+import {
+  DEFAULT_PROTOCOL_VERSION,
+  negotiateProtocolVersion,
+} from "./protocol";
 import { checkRateLimit } from "./rate-limit";
 import { TOOL_DEFS, callTool } from "./tools/index";
 
@@ -8,7 +12,8 @@ export const SERVER_INFO = {
   version: "0.1.0",
 } as const;
 
-export const PROTOCOL_VERSION = "2024-11-05";
+/** @deprecated Prefer negotiateProtocolVersion; default echo target. */
+export const PROTOCOL_VERSION = DEFAULT_PROTOCOL_VERSION;
 
 type JsonRpcId = string | number | null;
 
@@ -46,10 +51,21 @@ function jsonRpcError(
   };
 }
 
-function clientIp(request: Request): string {
-  const xf = request.headers.get("x-forwarded-for");
-  if (xf) return xf.split(",")[0]?.trim() || "unknown";
-  return request.headers.get("x-real-ip") ?? "unknown";
+/**
+ * Client IP for best-effort per-instance rate limiting.
+ * Prefer Vercel's trusted headers — do not use the first X-Forwarded-For
+ * entry (clients can spoof it). In-memory limits are per serverless
+ * instance; pair with a Vercel Firewall rule (see README / docs/rate-limit.md).
+ */
+export function clientIp(request: Request): string {
+  const vercel = request.headers.get("x-vercel-forwarded-for");
+  if (vercel) {
+    const first = vercel.split(",")[0]?.trim();
+    if (first) return first;
+  }
+  const real = request.headers.get("x-real-ip");
+  if (real?.trim()) return real.trim();
+  return "unknown";
 }
 
 export function corsHeaders(request: Request): HeadersInit {
@@ -82,10 +98,14 @@ async function handleSingle(
 
   try {
     switch (method) {
-      case "initialize":
+      case "initialize": {
+        const params = asRecord(message.params);
+        const protocolVersion = negotiateProtocolVersion(
+          params.protocolVersion,
+        );
         return {
           body: jsonRpcResult(id, {
-            protocolVersion: PROTOCOL_VERSION,
+            protocolVersion,
             capabilities: { tools: { listChanged: false } },
             serverInfo: SERVER_INFO,
             instructions:
@@ -93,6 +113,7 @@ async function handleSingle(
           }),
           isNotification: false,
         };
+      }
       case "notifications/initialized":
       case "notifications/cancelled":
         return { body: null, isNotification: true };
