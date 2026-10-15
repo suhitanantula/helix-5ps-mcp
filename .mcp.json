@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "helix-5ps": {
+      "type": "http",
+      "url": "https://mcp.suhitanantula.com/mcp"
+    }
+  }
+}

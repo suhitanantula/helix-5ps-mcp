@@ -1,0 +1,11 @@
+{
+  "name": "helix-5ps",
+  "description": "Read-only MCP tools for the 5Ps of Loop Design. No login. Advanced forms are teasers linking to the books and suhitanantula.com.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Suhit Anantula / The Helix Lab"
+  },
+  "homepage": "https://www.suhitanantula.com/5ps",
+  "license": "MIT",
+  "keywords": ["5ps", "helix", "mcp", "loop-design"]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "helix-5ps",
+  "displayName": "Helix 5Ps",
+  "description": "Read-only MCP tools for the 5Ps of Loop Design (Perceive → Perform → Portfolio → Pause/Promote → Progress). No login. No AI calls inside the server. Advanced forms appear as teasers.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Suhit Anantula / The Helix Lab"
+  },
+  "homepage": "https://www.suhitanantula.com/5ps",
+  "repository": "https://github.com/suhitanantula/helix-5ps-mcp",
+  "license": "MIT",
+  "keywords": ["5ps", "loop-design", "helix", "mcp", "strategy", "design"],
+  "logo": "TODO",
+  "mcp": "mcp.json"
+}
