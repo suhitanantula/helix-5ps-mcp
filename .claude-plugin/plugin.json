@@ -7,5 +7,11 @@
   },
   "homepage": "https://www.suhitanantula.com/5ps",
   "license": "MIT",
-  "keywords": ["5ps", "helix", "mcp", "loop-design"]
+  "keywords": [
+    "5ps",
+    "helix",
+    "mcp",
+    "loop-design"
+  ],
+  "logo": "assets/logo.png"
 }
