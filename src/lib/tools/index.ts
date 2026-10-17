@@ -72,7 +72,7 @@ export const TOOL_DEFS = [
     name: "diagnose_5ps",
     title: "Diagnose which P",
     description:
-      "Which P do I need? Routes a problem to a 5Ps capacity with reasons, using the public diagnostic cues. Problem text capped at 4,000 characters.",
+      "Which P do I need? Routes a problem to a 5Ps capacity (recommended_p) and a form (recommended_variant: loop | multi_agent | rhizomatic | population) with reasons and a one-line variant_reason, using public diagnostic cues. Problem text capped at 4,000 characters.",
     annotations: {
       readOnlyHint: true,
       idempotentHint: true,
